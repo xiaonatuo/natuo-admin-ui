@@ -147,11 +147,26 @@ const LoginPage: React.FC = () => {
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
         }}
       >
+        <Typography
+          sx={{
+            color: '#fff',
+            fontSize: '16px',
+            mb: 3,
+            fontFamily: '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,apple color emoji,segoe ui emoji,Segoe UI Symbol,noto color emoji',
+          }}
+        >
+          {hour >= 22 || hour < 5 ? greeting : `${greeting}，欢迎使用本系统`}
+        </Typography>
+
         {error && (
           <Alert 
             severity="error" 
             sx={{ 
-              mb: 2,
+              position: 'absolute',
+              top: '5%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '400px',
               borderRadius: 1,
               backgroundColor: 'rgba(255,0,0,0.1)',
               color: '#ff4d4f',
@@ -163,17 +178,6 @@ const LoginPage: React.FC = () => {
             {error}
           </Alert>
         )}
-
-        <Typography
-          sx={{
-            color: '#fff',
-            fontSize: '16px',
-            mb: 3,
-            fontFamily: '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,apple color emoji,segoe ui emoji,Segoe UI Symbol,noto color emoji',
-          }}
-        >
-          {hour >= 22 || hour < 5 ? greeting : `${greeting}，欢迎使用本系统`}
-        </Typography>
 
         <Box 
           component="form" 
