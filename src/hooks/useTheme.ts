@@ -9,7 +9,7 @@ import { useLocalStorage } from './useLocalStorage';
  */
 export const useTheme = () => {
   // 使用localStorage存储主题偏好
-  const [isDarkMode, setIsDarkMode] = useLocalStorage('theme', false);
+  const [isDarkMode, setIsDarkMode] = useLocalStorage('theme', true);
 
   // 当主题改变时更新body的class
   useEffect(() => {
