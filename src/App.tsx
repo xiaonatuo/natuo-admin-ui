@@ -6,6 +6,11 @@ import { menuItems } from './config/menu.config';
 import { useTabs } from './hooks/useTabs';
 import { useTheme } from './hooks/useTheme';
 import './styles/global.css';
+import LoginPage from './components/Login/LoginPage';
+import { AuthProvider } from './contexts/AuthContext';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
+import { useLocation } from 'react-router-dom';
 
 const { Content } = Layout;
 
@@ -89,45 +94,71 @@ function App() {
     return [{ title: currentTab.label }];
   };
 
+  // 创建受保护的路由组件
+  const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { isAuthenticated } = useAuth();
+    const location = useLocation();
+
+    if (!isAuthenticated) {
+      return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
+    return <>{children}</>;
+  };
+
   return (
-    <ConfigProvider
-      theme={{
-        algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-        token: {
-          borderRadius: 4,
-        },
-      }}
-    >
-      <Layout className="layout">
-        {/* 侧边栏导航 */}
-        <Sider
-          collapsed={collapsed}
-          onMenuClick={handleMenuClick}
-          selectedKeys={[activeTab]}
-        />
-        <Layout>
-          {/* 顶部栏 */}
-          <Header
-            collapsed={collapsed}
-            toggleCollapsed={() => setCollapsed(!collapsed)}
-            isDarkMode={isDarkMode}
-            toggleTheme={toggleTheme}
-            breadcrumbItems={getBreadcrumb()}
-          />
-          {/* 标签页导航 */}
-          <TabView
-            activeKey={activeTab}
-            tabs={openTabs}
-            onChange={handleTabChange}
-            onEdit={handleTabEdit}
-          />
-          {/* 内容区域 */}
-          <Content className="main-content">
-            {openTabs.find(tab => tab.key === activeTab)?.content || null}
-          </Content>
-        </Layout>
-      </Layout>
-    </ConfigProvider>
+    <AuthProvider>
+      <Router>
+        <ConfigProvider
+          theme={{
+            algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+            token: {
+              borderRadius: 4,
+            },
+          }}
+        >
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <Layout className="layout">
+                    {/* 侧边栏导航 */}
+                    <Sider
+                      collapsed={collapsed}
+                      onMenuClick={handleMenuClick}
+                      selectedKeys={[activeTab]}
+                    />
+                    <Layout>
+                      {/* 顶部栏 */}
+                      <Header
+                        collapsed={collapsed}
+                        toggleCollapsed={() => setCollapsed(!collapsed)}
+                        isDarkMode={isDarkMode}
+                        toggleTheme={toggleTheme}
+                        breadcrumbItems={getBreadcrumb()}
+                      />
+                      {/* 标签页导航 */}
+                      <TabView
+                        activeKey={activeTab}
+                        tabs={openTabs}
+                        onChange={handleTabChange}
+                        onEdit={handleTabEdit}
+                      />
+                      {/* 内容区域 */}
+                      <Content className="main-content">
+                        {openTabs.find(tab => tab.key === activeTab)?.content || null}
+                      </Content>
+                    </Layout>
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </ConfigProvider>
+      </Router>
+    </AuthProvider>
   );
 }
 
